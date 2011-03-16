@@ -14,8 +14,11 @@ local savedTweens = {}
 local lastUpdateTime = 0
 
 local function indexOf(t, value, start)
+	if start == nil then
+		start = 1
+	end
 	for i,v in ipairs(t) do
-		if v == value then
+		if i >= start and v == value then
 			return i
 		end
 	end
@@ -38,7 +41,7 @@ local function updateTweens(event)
 	local now = event.time / 1000
 	local offset = now - lastUpdateTime
 	local savedTweensCopy = copyTable(savedTweens)
-	for i = 1,# savedTweensCopy do
+	for i = 1,#savedTweensCopy do
 		local tween = savedTweensCopy[i]
 		tween:setPosition(tween.position + offset)
 	end
@@ -47,14 +50,14 @@ end
 	
 local function registerTween(tween)
 	table.insert(savedTweens, tween)
-	if # savedTweens == 1 then
+	if #savedTweens == 1 then
 		lastUpdateTime = system.getTimer() / 1000
 		Runtime:addEventListener("enterFrame", updateTweens)
 	end
 end
 	
 local function unregisterTween(tween)
-	table.remove(savedTweens, indexOf(tween))
+	table.remove(savedTweens, indexOf(savedTweens, tween))
 	if # savedTweens == 0 then
 		Runtime:removeEventListener("enterFrame", updateTweens)
 	end
