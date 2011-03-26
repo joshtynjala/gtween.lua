@@ -6,21 +6,25 @@ h2. Usage
 
 For those familiar with Corona, usage is very similar to "transition.to()":http://developer.anscamobile.com/reference/index/transitionto, but gtween offers a variety of useful features that go beyond Corona's built-in transitions. If you've used GTween in ActionScript, then gtween.lua should look very familiar.
 
-bc. local gtween = require("gtween")
+bc.. local gtween = require("gtween")
+
 local redSquare = display.newRect( 0, 0, 100, 100 )
 redSquare:setFillColor( 255, 0, 0 )
 redSquare.x = 60
 redSquare.y = 60
+
 local blueSquare = display.newRect( 0, 0, 100, 100 )
 blueSquare:setFillColor( 0, 0, 255 )
 blueSquare.x = 170
 blueSquare.y = 60
 blueSquare.alpha = 0
+
 local function redSquareMove_onChange( tween )
 	blueSquare.x = redSquare.x + 150
 	blueSquare.y = redSquare.y
 	blueSquare.alpha = 1 - redSquare.alpha
 end
+
 --[[
 	gtween.new
 	Parameters:
