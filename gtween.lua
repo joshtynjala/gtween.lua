@@ -100,6 +100,80 @@ local function init(tween)
 	end
 end
 
+local backS = 1.70158
+easing = {};
+easing.inBack = function(ratio)
+	return ratio*ratio*((backS+1)*ratio-backS)
+end
+easing.outBack = function(ratio)
+	ratio = ratio - 1
+	return ratio*ratio*((backS+1)*ratio+backS)+1
+end
+easing.inOutBack = function(ratio)
+	ratio = ratio * 2
+	if ratio < 1 then
+		return 0.5*(ratio*ratio*((backS*1.525+1)*ratio-backS*1.525))
+	else 
+		ratio = ratio - 2
+		return 0.5*(ratio*ratio*((backS*1.525+1)*ratio+backS*1.525)+2)
+	end
+end
+easing.inBounce = function(ratio)
+	return 1-easing.outBounce(1-ratio,0,0,0)
+end
+easing.outBounce = function(ratio)
+	if ratio < 1/2.75 then
+		return 7.5625*ratio*ratio
+	elseif ratio < 2/2.75 then
+		ratio = ratio - 1.5/2.75
+		return 7.5625*ratio*ratio+0.75
+	elseif ratio < 2.5/2.75 then
+		ratio= ratio - 2.25/2.75
+		return 7.5625*ratio*ratio+0.9375
+	else
+		ratio = ratio - 2.625/2.75
+		return 7.5625*ratio*ratio+0.984375
+	end
+end
+easing.inOutBounce = function(ratio)
+	ratio = ratio * 2
+	if ratio < 1 then 
+		return 0.5*easing.inBounce(ratio,0,0,0)
+	else
+		return 0.5*easing.outBounce(ratio-1,0,0,0)+0.5
+	end
+end
+easing.inCircular = function(ratio)
+	return -(math.sqrt(1-ratio*ratio)-1)
+end
+easing.outCircular = function(ratio)
+	return math.sqrt(1-(ratio-1)*(ratio-1))
+end
+easing.inOutCircular = function(ratio)
+	ratio = ratio * 2
+	if ratio < 1 then
+		return -0.5*(math.sqrt(1-ratio*ratio)-1)
+	else
+		ratio = ratio - 2
+		return 0.5*(math.sqrt(1-ratio*ratio)+1)
+	end
+end
+easing.inCubic = function(ratio)
+	return ratio*ratio*ratio
+end
+easing.outCubic = function(ratio)
+	ratio = ratio - 1
+	return ratio*ratio*ratio+1
+end
+easing.inOutCubic = function(ratio)
+	if ratio < 0.5 then
+		return 4*ratio*ratio*ratio
+	else
+		ratio = ratio - 1
+		return 4*ratio*ratio*ratio+1
+	end
+end
+
 function new(target, duration, values, props)
 
 	local gtween = {}
@@ -201,12 +275,13 @@ function new(target, duration, values, props)
 		if self.duration == 0 and self.position >= 0 then
 			self.ratio = 1
 		else
-			if self.ease then
+			if self.ease ~= nil then
 				self.ratio = self.ease(self.calculatedPosition / self.duration, 0, 1, 1)
-			elseif self.transitionEase then
+			elseif self.transitionEase ~= nil then
 				self.ratio = self.transitionEase(self.calculatedPosition, self.duration, 0, 1)
 			end
 		end
+		
 		
 		if self.target and (self.position >= 0 or self.positionOld >= 0) and self.calculatedPosition ~= self.calculatedPositionOld then
 			if not self.inited then
