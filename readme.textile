@@ -40,19 +40,52 @@ gtween.new(redSquare, 1.5,
 	alpha = 0
 },
 {
-	transitionEase = easing.outQuad,	--standard Corona ease
-	repeatCount = math.huge,			--repeat forever!
-	reflect = true,						--yoyo
-	onChange = redSquareMove_onChange	--called after every update
+	transitionEase = easing.outQuad,		--transition-style easing function
+	--ease = gtween.easing.outQuadratic,	--gtween-style easing function
+	repeatCount = math.huge,				--repeat forever!
+	reflect = true,							--yoyo
+	onChange = redSquareMove_onChange		--called after every update
 })
 
 h2. Easing
 
-Corona uses a non-standard signature for its built-in easing functions, but the gtween.lua port has been modified to support them. Use the @transitionEase@ property (see the example above) to tell gtween.lua to use one of the "easing functions":http://developer.anscamobile.com/content/easing designed for use with Corona's "transitions":http://developer.anscamobile.com/content/transitions. Use @ease@ (same as ActionScript) to use a standard easing function.
+Corona uses a non-standard signature for its built-in easing functions, but the gtween.lua port has been modified to support them. Use the @transitionEase@ property (see the example above) to tell gtween.lua to use one of the "easing functions":http://developer.anscamobile.com/content/easing designed for use with Corona's "transitions":http://developer.anscamobile.com/content/transitions. Use @ease@ (same as ActionScript) to use one of gtween's easing functions.
+
+The following easing functions are included in gtween.lua, and should be used with the @ease@ property. Some overlap Corona's easing functions, while others are new.
+* @gtween.easing.inBack@
+* @gtween.easing.outBack@
+* @gtween.easing.inOutBack@
+* @gtween.easing.inBounce@
+* @gtween.easing.outBounce@
+* @gtween.easing.inOutBounce@
+* @gtween.easing.inCircular@
+* @gtween.easing.outCircular@
+* @gtween.easing.inOutCircular@
+* @gtween.easing.inCubic@
+* @gtween.easing.outCubic@
+* @gtween.easing.inOutCubic@
+* @gtween.easing.inElastic@
+* @gtween.easing.outElastic@
+* @gtween.easing.inOutElastic@
+* @gtween.easing.inExponential@
+* @gtween.easing.outExponential@
+* @gtween.easing.inOutExponential@
+* @gtween.easing.noneLinear@
+* @gtween.easing.inQuadratic@
+* @gtween.easing.outQuadratic@
+* @gtween.easing.inOutQuadratic@
+* @gtween.easing.inQuartic@
+* @gtween.easing.outQuartic@
+* @gtween.easing.inOutQuartic@
+* @gtween.easing.inQuintic@
+* @gtween.easing.outQuintic@
+* @gtween.easing.inOutQuintic@
+* @gtween.easing.inSine@
+* @gtween.easing.outSine@
+* @gtween.easing.inOutSine@
 
 h2. Unsupported features
 
 The following features from the original ActionScript GTween are not included in this port. They may be added in the future.
 * GTweenTimeline
 * Plugins
-* Easing functions are not included, but see see the Easing section above for more information.
