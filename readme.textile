@@ -40,11 +40,11 @@ gtween.new(redSquare, 1.5,
 	alpha = 0
 },
 {
-	transitionEase = easing.outQuad,		--transition-style easing function
-	--ease = gtween.easing.outQuadratic,	--gtween-style easing function
-	repeatCount = math.huge,				--repeat forever!
-	reflect = true,							--yoyo
-	onChange = redSquareMove_onChange		--called after every update
+	transitionEase = easing.outQuad,        --transition-style easing function
+	--ease = gtween.easing.outQuadratic,    --gtween-style easing function
+	repeatCount = math.huge,                --repeat forever!
+	reflect = true,                         --yoyo
+	onChange = redSquareMove_onChange       --called after every update
 })
 
 h2. Easing
