@@ -7,6 +7,8 @@ Based on GTween for ActionScript 3
 http://gskinner.com/libraries/gtween/
 Copyright (c) 2009 Grant Skinner
 Released under the MIT license.
+
+Easing functions adapted from Robert Penner's AS3 tweening equations.
 ]]--
 module(..., package.seeall)
 
