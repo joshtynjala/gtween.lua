@@ -12,8 +12,10 @@ Easing functions adapted from Robert Penner's AS3 tweening equations.
 ]]--
 module(..., package.seeall)
 
+local gtween = {}
+
 local savedTweens = {}
-local lastUpdateTime = 0
+local savedTime = 0
 
 local function indexOf(t, value, start)
 	if start == nil then
@@ -40,20 +42,23 @@ local function copyTable(t)
 end
 
 local function updateTweens(event)
-	local now = event.time / 1000
-	local offset = now - lastUpdateTime
+	local t = savedTime
+	savedTime = event.time / 1000
+	if gtween.pauseAll then
+		return
+	end
+	local offset = savedTime - t
 	local savedTweensCopy = copyTable(savedTweens)
 	for i = 1,#savedTweensCopy do
 		local tween = savedTweensCopy[i]
 		tween:setPosition(tween.position + offset)
 	end
-	lastUpdateTime = now
 end
 	
 local function registerTween(tween)
 	table.insert(savedTweens, tween)
 	if #savedTweens == 1 then
-		lastUpdateTime = system.getTimer() / 1000
+		savedTime = system.getTimer() / 1000
 		Runtime:addEventListener("enterFrame", updateTweens)
 	end
 end
@@ -74,6 +79,8 @@ local function invalidate(tween)
 		tween:play()
 	end
 end
+
+pauseAll = false
 	
 local function setValues(tween, newValues)
 	copyTableTo(newValues, tween.values)
@@ -103,15 +110,15 @@ local function init(tween)
 end
 
 local backS = 1.70158
-easing = {};
-easing.inBack = function(ratio)
+gtween.easing = {};
+gtween.easing.inBack = function(ratio)
 	return ratio*ratio*((backS+1)*ratio-backS)
 end
-easing.outBack = function(ratio)
+gtween.easing.outBack = function(ratio)
 	ratio = ratio - 1
 	return ratio*ratio*((backS+1)*ratio+backS)+1
 end
-easing.inOutBack = function(ratio)
+gtween.easing.inOutBack = function(ratio)
 	ratio = ratio * 2
 	if ratio < 1 then
 		return 0.5*(ratio*ratio*((backS*1.525+1)*ratio-backS*1.525))
@@ -120,10 +127,10 @@ easing.inOutBack = function(ratio)
 		return 0.5*(ratio*ratio*((backS*1.525+1)*ratio+backS*1.525)+2)
 	end
 end
-easing.inBounce = function(ratio)
-	return 1-easing.outBounce(1-ratio,0,0,0)
+gtween.easing.inBounce = function(ratio)
+	return 1-gtween.easing.outBounce(1-ratio,0,0,0)
 end
-easing.outBounce = function(ratio)
+gtween.easing.outBounce = function(ratio)
 	if ratio < 1/2.75 then
 		return 7.5625*ratio*ratio
 	elseif ratio < 2/2.75 then
@@ -137,21 +144,21 @@ easing.outBounce = function(ratio)
 		return 7.5625*ratio*ratio+0.984375
 	end
 end
-easing.inOutBounce = function(ratio)
+gtween.easing.inOutBounce = function(ratio)
 	ratio = ratio * 2
 	if ratio < 1 then 
-		return 0.5*easing.inBounce(ratio,0,0,0)
+		return 0.5*gtween.easing.inBounce(ratio,0,0,0)
 	else
-		return 0.5*easing.outBounce(ratio-1,0,0,0)+0.5
+		return 0.5*gtween.easing.outBounce(ratio-1,0,0,0)+0.5
 	end
 end
-easing.inCircular = function(ratio)
+gtween.easing.inCircular = function(ratio)
 	return -(math.sqrt(1-ratio*ratio)-1)
 end
-easing.outCircular = function(ratio)
+gtween.easing.outCircular = function(ratio)
 	return math.sqrt(1-(ratio-1)*(ratio-1))
 end
-easing.inOutCircular = function(ratio)
+gtween.easing.inOutCircular = function(ratio)
 	ratio = ratio * 2
 	if ratio < 1 then
 		return -0.5*(math.sqrt(1-ratio*ratio)-1)
@@ -160,14 +167,14 @@ easing.inOutCircular = function(ratio)
 		return 0.5*(math.sqrt(1-ratio*ratio)+1)
 	end
 end
-easing.inCubic = function(ratio)
+gtween.easing.inCubic = function(ratio)
 	return ratio*ratio*ratio
 end
-easing.outCubic = function(ratio)
+gtween.easing.outCubic = function(ratio)
 	ratio = ratio - 1
 	return ratio*ratio*ratio+1
 end
-easing.inOutCubic = function(ratio)
+gtween.easing.inOutCubic = function(ratio)
 	if ratio < 0.5 then
 		return 4*ratio*ratio*ratio
 	else
@@ -178,20 +185,20 @@ end
 local elasticA = 1;
 local elasticP = 0.3;
 local elasticS = elasticP/4;
-easing.inElastic = function(ratio)
+gtween.easing.inElastic = function(ratio)
 	if ratio == 0 or ratio == 1 then
 		return ratio
 	end
 	ratio = ratio - 1
 	return -(elasticA * math.pow(2, 10 * ratio) * math.sin((ratio - elasticS) * (2 * math.pi) / elasticP));
 end
-easing.outElastic = function(ratio)
+gtween.easing.outElastic = function(ratio)
 	if ratio == 0 or ratio == 1 then
 		return ratio
 	end
 	return elasticA * math.pow(2, -10 * ratio) *  math.sin((ratio - elasticS) * (2 * math.pi) / elasticP) + 1;
 end
-easing.inOutElastic = function(ratio)
+gtween.easing.inOutElastic = function(ratio)
 	if ratio == 0 or ratio == 1 then
 		return ratio
 	end
@@ -201,19 +208,19 @@ easing.inOutElastic = function(ratio)
 	end
 	return 0.5 * elasticA * math.pow(2, -10 * ratio) * math.sin((ratio - elasticS*1.5) * (2 * math.pi) / (elasticP*1.5)) + 1;
 end
-easing.inExponential = function(ratio)
+gtween.easing.inExponential = function(ratio)
 	if ratio == 0 then
 		return 0
 	end
 	return math.pow(2, 10 * (ratio - 1))
 end
-easing.outExponential = function(ratio)
+gtween.easing.outExponential = function(ratio)
 	if ratio == 1 then
 		return 1
 	end
 	return 1-math.pow(2, -10 * ratio)
 end
-easing.inOutExponential = function(ratio)
+gtween.easing.inOutExponential = function(ratio)
 	if ratio == 0 or ratio == 1 then 
 		return ratio
 	end
@@ -223,89 +230,87 @@ easing.inOutExponential = function(ratio)
 	end
 	return 1-0.5*math.pow(2, -10*ratio)
 end
-easing.noneLinear = function(ratio)
+gtween.easing.noneLinear = function(ratio)
 	return ratio
 end
-easing.inQuadratic = function(ratio)
+gtween.easing.inQuadratic = function(ratio)
 	return ratio*ratio
 end
-easing.outQuadratic = function(ratio)
+gtween.easing.outQuadratic = function(ratio)
 	return -ratio*(ratio-2)
 end
-easing.inOutQuadratic = function(ratio)
+gtween.easing.inOutQuadratic = function(ratio)
 	if ratio < 0.5 then
 		return 2*ratio*ratio
 	end
 	return -2*ratio*(ratio-2)-1
 end
-easing.inQuartic = function(ratio)
+gtween.easing.inQuartic = function(ratio)
 	return ratio*ratio*ratio*ratio
 end
-easing.outQuartic = function(ratio)
+gtween.easing.outQuartic = function(ratio)
 	ratio = ratio - 1
 	return 1-ratio*ratio*ratio*ratio
 end
-easing.inOutQuartic = function(ratio)
+gtween.easing.inOutQuartic = function(ratio)
 	if ratio < 0.5 then
 		return 8*ratio*ratio*ratio*ratio
 	end
 	ratio = ratio - 1
 	return -8*ratio*ratio*ratio*ratio+1
 end
-easing.inQuintic = function(ratio)
+gtween.easing.inQuintic = function(ratio)
 	return ratio*ratio*ratio*ratio*ratio
 end
-easing.outQuintic = function(ratio)
+gtween.easing.outQuintic = function(ratio)
 	ratio = ratio - 1
 	return 1+ratio*ratio*ratio*ratio*ratio
 end
-easing.inOutQuintic = function(ratio)
+gtween.easing.inOutQuintic = function(ratio)
 	if ratio < 0.5 then
 		return 16*ratio*ratio*ratio*ratio*ratio
 	end
 	ratio = ratio - 1
 	return 16*ratio*ratio*ratio*ratio*ratio+1
 end
-easing.inSine = function(ratio)
+gtween.easing.inSine = function(ratio)
 	return 1-math.cos(ratio * (math.pi / 2))
 end
-easing.outSine = function(ratio)
+gtween.easing.outSine = function(ratio)
 	return math.sin(ratio * (math.pi / 2))
 end
-easing.inOutSine = function(ratio)
+gtween.easing.inOutSine = function(ratio)
 	return -0.5*(math.cos(ratio*math.pi)-1)
 end
 
-function new(target, duration, values, props)
-
-	local gtween = {}
-	gtween.inited = false
-	gtween.isPlaying = false
-	gtween.ratio = nil
-	gtween.calculatedPosition = nil
-	gtween.positionOld = nil
-	gtween.ratioOld = nil
-	gtween.calculatedPositionOld = nil
-	gtween.values = nil
-	gtween.initValues = nil
-	gtween.rangeValues = nil
+gtween.new = function(target, duration, values, props)
+	local tween = {}
+	tween.inited = false
+	tween.isPlaying = false
+	tween.ratio = nil
+	tween.calculatedPosition = nil
+	tween.positionOld = nil
+	tween.ratioOld = nil
+	tween.calculatedPositionOld = nil
+	tween.values = nil
+	tween.initValues = nil
+	tween.rangeValues = nil
 	
-	gtween.autoPlay = true
-	gtween.delay = 0
-	gtween.duration = 1
-	gtween.transitionEase = easing.linear
-	gtween.ease = nil
-	gtween.nextTween = nil
-	gtween.onInit = nil
-	gtween.onChange = nil
-	gtween.onComplete = nil
-	gtween.position = 0
-	gtween.repeatCount = 1
-	gtween.reflect = false
-	gtween.supressEvents = false
-	gtween.target = nil
+	tween.autoPlay = true
+	tween.delay = 0
+	tween.duration = 1
+	tween.transitionEase = easing.linear
+	tween.nextTween = nil
+	tween.onInit = nil
+	tween.onChange = nil
+	tween.onComplete = nil
+	tween.position = 0
+	tween.repeatCount = 1
+	tween.reflect = false
+	tween.supressEvents = false
+	tween.target = nil
 		
-	function gtween:play()
+	function tween:play()
 		if self.isPlaying then
 			return
 		end
@@ -322,7 +327,7 @@ function new(target, duration, values, props)
 		end
 		registerTween(self)
 	end
-	function gtween:pause()
+	function tween:pause()
 		if not self.isPlaying then
 			return
 		end
@@ -330,12 +335,12 @@ function new(target, duration, values, props)
 		unregisterTween(self)
 	end
 	
-	function gtween:toBeginning()
+	function tween:toBeginning()
 		self:setPosition(0)
 		self:pause()
 	end
 	
-	function gtween:toEnd()
+	function tween:toEnd()
 		if self.repeatCount > 0 then
 			self:setPosition(self.repeatCount * self.duration)
 		else
@@ -343,7 +348,7 @@ function new(target, duration, values, props)
 		end
 	end
 	
-	function gtween:setPosition(value)
+	function tween:setPosition(value)
 		self.positionOld = self.position
 		self.ratioOld = self.ratio
 		self.calculatedPositionOld = self.calculatedPosition
@@ -416,25 +421,27 @@ function new(target, duration, values, props)
 		end
 	end
 	
-	gtween.target = target
+	tween.target = target
 	if duration == nil then
-		gtween.duration = 1
+		tween.duration = 1
 	else
-		gtween.duration = duration
+		tween.duration = duration
 	end
 	if props then
-		copyTableTo(props, gtween)
+		copyTableTo(props, tween)
 	end
 	if values == nil then
 		values = {}
 	end
-	if gtween.delay ~= 0 then
-		gtween.position = -gtween.delay
+	if tween.delay ~= 0 then
+		tween.position = -tween.delay
 	end
-	resetValues(gtween, values)
-	if gtween.duration == 0 and gtween.delay == 0 and gtween.autoPlay then
-		gtween:setPosition(0)
+	resetValues(tween, values)
+	if tween.duration == 0 and tween.delay == 0 and tween.autoPlay then
+		tween:setPosition(0)
 	end
 	
-	return gtween
+	return tween
 end
+
+return gtween
