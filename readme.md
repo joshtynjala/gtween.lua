@@ -49,41 +49,41 @@ For those familiar with Corona, usage is very similar to [transition.to()](http:
 
 ## Easing
 
-Corona uses a different signature for its built-in easing functions than the ones that come with gtween, but gtween can use them with the @transitionEase@ property (see the example above) to tell gtween.lua to use one of the [easing functions](http://developer.anscamobile.com/content/easing) designed for use with Corona's [transitions](http://developer.anscamobile.com/content/transitions). Use @ease@ (same as ActionScript) to use one of gtween's easing functions.
+Corona uses a different signature for its built-in easing functions than the ones that come with gtween, but gtween can use them with the `transitionEase` property (see the example above) to tell gtween.lua to use one of the [easing functions](http://developer.anscamobile.com/content/easing) designed for use with Corona's [transitions](http://developer.anscamobile.com/content/transitions). Use `ease` (same as ActionScript) to use one of gtween's easing functions.
 
-The following easing functions are included in gtween.lua, and should be used with the @ease@ property. Some overlap Corona's easing functions, while others are new.
+The following easing functions are included in gtween.lua, and should be used with the `ease` property. Some overlap Corona's easing functions, while others are new.
 
- * @gtween.easing.inBack@
- * @gtween.easing.outBack@
- * @gtween.easing.inOutBack@
- * @gtween.easing.inBounce@
- * @gtween.easing.outBounce@
- * @gtween.easing.inOutBounce@
- * @gtween.easing.inCircular@
- * @gtween.easing.outCircular@
- * @gtween.easing.inOutCircular@
- * @gtween.easing.inCubic@
- * @gtween.easing.outCubic@
- * @gtween.easing.inOutCubic@
- * @gtween.easing.inElastic@
- * @gtween.easing.outElastic@
- * @gtween.easing.inOutElastic@
- * @gtween.easing.inExponential@
- * @gtween.easing.outExponential@
- * @gtween.easing.inOutExponential@
- * @gtween.easing.noneLinear@
- * @gtween.easing.inQuadratic@
- * @gtween.easing.outQuadratic@
- * @gtween.easing.inOutQuadratic@
- * @gtween.easing.inQuartic@
- * @gtween.easing.outQuartic@
- * @gtween.easing.inOutQuartic@
- * @gtween.easing.inQuintic@
- * @gtween.easing.outQuintic@
- * @gtween.easing.inOutQuintic@
- * @gtween.easing.inSine@
- * @gtween.easing.outSine@
- * @gtween.easing.inOutSine@
+ * `gtween.easing.inBack`
+ * `gtween.easing.outBack`
+ * `gtween.easing.inOutBack`
+ * `gtween.easing.inBounce`
+ * `gtween.easing.outBounce`
+ * `gtween.easing.inOutBounce`
+ * `gtween.easing.inCircular`
+ * `gtween.easing.outCircular`
+ * `gtween.easing.inOutCircular`
+ * `gtween.easing.inCubic`
+ * `gtween.easing.outCubic`
+ * `gtween.easing.inOutCubic`
+ * `gtween.easing.inElastic`
+ * `gtween.easing.outElastic`
+ * `gtween.easing.inOutElastic`
+ * `gtween.easing.inExponential`
+ * `gtween.easing.outExponential`
+ * `gtween.easing.inOutExponential`
+ * `gtween.easing.noneLinear`
+ * `gtween.easing.inQuadratic`
+ * `gtween.easing.outQuadratic`
+ * `gtween.easing.inOutQuadratic`
+ * `gtween.easing.inQuartic`
+ * `gtween.easing.outQuartic`
+ * `gtween.easing.inOutQuartic`
+ * `gtween.easing.inQuintic`
+ * `gtween.easing.outQuintic`
+ * `gtween.easing.inOutQuintic`
+ * `gtween.easing.inSine`
+ * `gtween.easing.outSine`
+ * `gtween.easing.inOutSine`
 
 ## Unsupported features
 
