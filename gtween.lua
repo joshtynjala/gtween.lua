@@ -10,7 +10,11 @@ Released under the MIT license.
 
 Easing functions adapted from Robert Penner's AS3 tweening equations.
 ]]--
-module(..., package.seeall)
+
+local gtween =
+{
+	pauseAll = false
+}
 
 local savedTweens = {}
 local savedTime = 0
@@ -42,7 +46,7 @@ end
 local function updateTweens(event)
 	local t = savedTime
 	savedTime = event.time / 1000
-	if pauseAll then
+	if gtween.pauseAll then
 		return
 	end
 	local offset = savedTime - t
@@ -52,7 +56,7 @@ local function updateTweens(event)
 		tween:setPosition(tween.position + offset)
 	end
 end
-	
+
 local function registerTween(tween)
 	table.insert(savedTweens, tween)
 	if #savedTweens == 1 then
@@ -60,14 +64,14 @@ local function registerTween(tween)
 		Runtime:addEventListener("enterFrame", updateTweens)
 	end
 end
-	
+
 local function unregisterTween(tween)
 	table.remove(savedTweens, indexOf(savedTweens, tween))
 	if # savedTweens == 0 then
 		Runtime:removeEventListener("enterFrame", updateTweens)
 	end
 end
-	
+
 local function invalidate(tween)
 	tween.inited = false
 	if tween.position > 0 or tween.position == nil then
@@ -78,18 +82,16 @@ local function invalidate(tween)
 	end
 end
 
-pauseAll = false
-	
 local function setValues(tween, newValues)
 	copyTableTo(newValues, tween.values)
 	invalidate(tween)
 end
-		
+
 local function resetValues(tween, newValues)
 	tween.values = {}
 	setValues(tween, newValues)
 end
-		
+
 local function init(tween)
 	tween.inited = true
 	tween.initValues = {}
@@ -110,7 +112,7 @@ end
 local transitionEasing = easing
 
 local backS = 1.70158
-easing = {};
+local easing = {};
 easing.inBack = function(ratio)
 	return ratio*ratio*((backS+1)*ratio-backS)
 end
@@ -282,8 +284,9 @@ end
 easing.inOutSine = function(ratio)
 	return -0.5*(math.cos(ratio*math.pi)-1)
 end
+gtween.easing = easing
 
-function new(target, duration, values, props)
+function gtween.new(target, duration, values, props)
 	local tween = {}
 	tween.inited = false
 	tween.isPlaying = false
@@ -309,7 +312,7 @@ function new(target, duration, values, props)
 	tween.reflect = false
 	tween.supressEvents = false
 	tween.target = nil
-		
+	
 	function tween:play()
 		if self.isPlaying then
 			return
@@ -378,7 +381,7 @@ function new(target, duration, values, props)
 				self.calculatedPosition = self.duration - self.calculatedPosition
 			end
 		end
-			
+		
 		if self.duration == 0 and self.position >= 0 then
 			self.ratio = 1
 		else
@@ -388,7 +391,6 @@ function new(target, duration, values, props)
 				self.ratio = self.transitionEase(self.calculatedPosition, self.duration, 0, 1)
 			end
 		end
-		
 		
 		if self.target and (self.position >= 0 or self.positionOld >= 0) and self.calculatedPosition ~= self.calculatedPositionOld then
 			if not self.inited then
@@ -443,3 +445,5 @@ function new(target, duration, values, props)
 	
 	return tween
 end
+
+return gtween
